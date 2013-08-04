@@ -3,6 +3,7 @@
 
 import cherrypy
 
+
 class Quote(object):
 
     def __init__(self):
@@ -28,10 +29,10 @@ class Quote(object):
         c = cherrypy.thread_data.sql.cursor()
         if mode == 'new':
             c.execute('SELECT * FROM quotes WHERE approved=1 ORDER BY'
-                      ' date DESC LIMIT ?,?', [lbound, lbound + 10])
+                      ' date DESC')
         elif mode == 'best':
             c.execute('SELECT * FROM quotes WHERE approved=1 ORDER BY'
-                      ' rate DESC LIMIT ?,?', [lbound, lbound + 10])
+                      ' rate DESC')
         else:
             return {}
 
@@ -53,6 +54,85 @@ class Quote(object):
             data.update({'sent': True})
         return data
 
+    @cherrypy.expose
+    @cherrypy.tools.render(template="admin.mako")
+    @cherrypy.tools.auth()
+    def admin(self):
+        #raise cherrypy.HTTPRedirect("/login")
+        c = cherrypy.thread_data.sql.cursor()
+        c.execute('SELECT * FROM quotes WHERE approved=0 ORDER BY date ASC')
+        data = {'quotes': c.fetchall()}
+        c.close()
+        return data
+
+    @cherrypy.expose
+    @cherrypy.tools.auth()
+    def approve(self, id):
+        c = cherrypy.thread_data.sql.cursor()
+        c.execute('UPDATE quotes SET approved=1 WHERE id=?', [id])
+        cherrypy.thread_data.sql.commit()
+        c.close()
+        return b'OK'
+
+    @cherrypy.expose
+    @cherrypy.tools.auth()
+    def delete(self, id):
+        c = cherrypy.thread_data.sql.cursor()
+        c.execute('DELETE FROM quotes WHERE id=?', [id])
+        cherrypy.thread_data.sql.commit()
+        c.close()
+        return b'OK'
+
+    # MAKE IT SECURE!
+    @cherrypy.expose
+    def voteup(self, id):
+        can = self.__user_cannot_vote(id)
+        if can:
+            return can
+
+        c = cherrypy.thread_data.sql.cursor()
+        c.execute('UPDATE quotes SET rate=rate+1 WHERE id=?', id)
+        cherrypy.thread_data.sql.commit()
+        c.close()
+        self.__add_user_to_voters(id)
+        resp = 'OK - rate: %d' % self.__get_current_rating(id)
+        return bytes(resp, 'utf-8')
+
+    @cherrypy.expose
+    def votedown(self, id):
+        can = self.__user_cannot_vote(id)
+        if can:
+            return can
+
+        c = cherrypy.thread_data.sql.cursor()
+        c.execute('UPDATE quotes SET rate=rate-1 WHERE id=?', id)
+        cherrypy.thread_data.sql.commit()
+        c.close()
+        self.__add_user_to_voters(id)
+        resp = 'OK - rate: %d' % self.__get_current_rating(id)
+        return bytes(resp, 'utf-8')
+
+    @cherrypy.expose
+    @cherrypy.tools.render(template="login.mako")
+    def login(self, username=None, password=None):
+        if username is not None:
+            import hashlib
+            pwd = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            c = cherrypy.thread_data.sql.cursor()
+            c.execute('SELECT * FROM admins WHERE login=? AND pass=?',
+                      [username, pwd])
+            if c.fetchone() is not None:
+                cherrypy.session.regenerate()
+                cherrypy.session['qdb_username'] = username
+                cherrypy.request.login = username
+                raise cherrypy.HTTPRedirect('/admin')
+        return {}
+
+    @cherrypy.expose
+    @cherrypy.tools.auth()
+    def change_pwd(self, pwd=None):
+        pass
+
     def __user_cannot_vote(self, id):
         c = cherrypy.thread_data.sql.cursor()
         c.execute('SELECT * FROM quotes WHERE id=?', id)
@@ -62,7 +142,7 @@ class Quote(object):
             return b"Quote not found"
 
         ip = cherrypy.request.remote.ip
-        c.execute('SELECT * from voters WHERE ip=? AND vid=?',[ip, id])
+        c.execute('SELECT * from voters WHERE ip=? AND vid=?', [ip, id])
         res = c.fetchone()
         if res is not None:
             c.close()
@@ -77,30 +157,8 @@ class Quote(object):
         cherrypy.thread_data.sql.commit()
         c.close()
 
-    # MAKE IT SECURE!
-    @cherrypy.expose
-    def voteup(self, id):
-        can = self.__user_cannot_vote(id)
-        if can:
-            return can
-
+    def __get_current_rating(self, id):
         c = cherrypy.thread_data.sql.cursor()
-        c.execute('UPDATE quotes SET rate=rate+1 WHERE id=?', id)
-        cherrypy.thread_data.sql.commit()
-        c.close()
-        self.__add_user_to_voters(id)
-        return b'OK'
-
-    @cherrypy.expose
-    def votedown(self, id):
-        can = self.__user_cannot_vote(id)
-        if can:
-            return can
-
-        c = cherrypy.thread_data.sql.cursor()
-        c.execute('UPDATE quotes SET rate=rate-1 WHERE id=?', id)
-        cherrypy.thread_data.sql.commit()
-        c.close()
-        self.__add_user_to_voters(id)
-        return b'OK'
+        c.execute('SELECT rate FROM quotes WHERE id=?', [id])
+        return c.fetchone()[0]
 

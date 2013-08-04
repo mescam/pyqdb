@@ -31,6 +31,9 @@ class Application(object):
         cherrypy.engine.mako = TemplatePlugin(cherrypy.engine, self.base_dir)
         cherrypy.engine.mako.subscribe()
 
+        from lib.user import UserTool
+        cherrypy.tools.auth = UserTool()
+
         from lib.db import DBPlugin
         cherrypy.engine.db = DBPlugin(cherrypy.engine, self.base_dir)
         cherrypy.engine.db.subscribe()

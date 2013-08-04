@@ -1,7 +1,7 @@
 pyqdb-tests
 ===========
 
-Just playing with [CherryPy](http://cherrypy.org) amd making quote database.
+Just playing with [CherryPy](http://cherrypy.org) and making quote database.
 
 ####What is pyqdb?
 It's just a simple project written in python3 with cherrypy. I made it because I was bored and wanted to

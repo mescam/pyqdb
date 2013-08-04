@@ -23,7 +23,13 @@
     p.quote {
         margin-left: 40px;
     }
+
+    a {
+        text-decoration: underline;
+        cursor: pointer;
+    }
     </style>
+    <meta charset="utf-8">
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 </head>
 <body>
