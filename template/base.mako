@@ -24,6 +24,7 @@
         margin-left: 40px;
     }
     </style>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 </head>
 <body>
     <div class="header">

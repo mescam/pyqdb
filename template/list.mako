@@ -15,9 +15,34 @@ def int2time(s):
 % for quote in quotes:
 <div class="pure-g">
     <div class="pure-u-1">
-        <p class="quote">${quote[1]|int2time} <a href="/voteup/${quote[0]}">+</a> / <a href="/votedown/${quote[0]}">-</a> (rating: ${quote[4]})</p>
+        <p class="quote">${quote[1]|int2time}
+        <span id="vote${quote[0]}">
+        <a onClick="voteup(${quote[0]})" href="#">+</a> / <a href="#" onClick="votedown(${quote[0]})">-</a> (rating: ${quote[4]})
+        </span>
+        </p>
         <blockquote>${quote[2]|h,nl2br}</blockquote>
     </div>
 </div>
 % endfor
+
+
+<script>
+function voteup(id) {
+    $.ajax({
+        url: "/voteup/"+id,
+        context: document.body
+    }).done(function(resp) {
+        $("#vote"+id).html(resp)
+    });
+}
+
+function votedown(id) {
+    $.ajax({
+        url: "/votedown/"+id,
+        context: document.body
+    }).done(function(resp) {
+        $("#vote"+id).html(resp)
+    });
+}
+</script>
 </%block>
