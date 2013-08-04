@@ -31,6 +31,7 @@ cd pyqdb-tests
 ./quotes.py #this should be done inside screen session, because pyqdb still lacks 'run in background' mode.
 ````
 This will launch http server on port 8080 (see conf/http.cfg), you can use mod_proxy so your webserver can pass :80 requests
+
 Example for lighttpd:
 ````
 $HTTP["host"] == "qdb.example.net" {
