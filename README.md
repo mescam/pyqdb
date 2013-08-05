@@ -26,8 +26,8 @@ source bin/activate
 pip install cherrypy
 pip install mako
 pip install sqlite3
-git clone https://github.com/mescam/pyqdb-tests.git
-cd pyqdb-tests
+git clone https://github.com/mescam/pyqdb.git
+cd pyqdb
 vim conf/http.cfg # set listening ip and port
 vim conf/app.cfg # edit tools.proxy section (turn it off if not using mod_proxy)
 ./quotes.py #this should be done inside screen session, because pyqdb still lacks 'run in background' mode.
