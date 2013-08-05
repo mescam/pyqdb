@@ -38,10 +38,11 @@ class Application(object):
         cherrypy.engine.db = DBPlugin(cherrypy.engine, self.base_dir)
         cherrypy.engine.db.subscribe()
 
-        cherrypy.tools.proxy(base=None,
-                             local='X-Forwarded-Host',
-                             remote='X-Forwarded-For',
-                             scheme='X-Forwarded-Proto')
+        #cherrypy.tools.proxy(base=None,
+        #                     local='X-Forwarded-Host',
+        #                     remote='X-Forwarded-For',
+        #                     scheme='X-Forwarded-Proto')
+        #cherrypy.tools.proxy.subscribe()
 
         from webapp.app import Quote
         webapp = Quote()
