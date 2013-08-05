@@ -38,6 +38,11 @@ class Application(object):
         cherrypy.engine.db = DBPlugin(cherrypy.engine, self.base_dir)
         cherrypy.engine.db.subscribe()
 
+        cherrypy.tools.proxy(base=None,
+                             local='X-Forwarded-Host',
+                             remote='X-Forwarded-For',
+                             scheme='X-Forwarded-Proto')
+
         from webapp.app import Quote
         webapp = Quote()
         self.app = cherrypy.tree.mount(webapp, '/',
