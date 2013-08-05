@@ -1,4 +1,4 @@
-pyqdb-tests
+pyqdb
 ===========
 
 Just playing with [CherryPy](http://cherrypy.org) and making quote database.
@@ -28,6 +28,8 @@ pip install mako
 pip install sqlite3
 git clone https://github.com/mescam/pyqdb-tests.git
 cd pyqdb-tests
+vim conf/http.cfg # set listening ip and port
+vim conf/app.cfg # edit tools.proxy section (turn it off if not using mod_proxy)
 ./quotes.py #this should be done inside screen session, because pyqdb still lacks 'run in background' mode.
 ````
 This will launch http server on port 8080 (see conf/http.cfg), you can use mod_proxy so your webserver can pass :80 requests
