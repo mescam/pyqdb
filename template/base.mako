@@ -18,6 +18,10 @@
         background-color: rgb(250, 250, 250);
         padding: 20px 20px 20px 20px;
         border: 1px solid rgb(238, 238, 238);
+        font-family: Consolas, 'Liberation Mono', Courier, monospace;
+	font-size: 13px;
+        color: rgb(51, 51, 51);
+        font-height: 19px;
     }
 
     p.quote {
