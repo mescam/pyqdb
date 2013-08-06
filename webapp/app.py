@@ -135,7 +135,7 @@ class Quote(object):
 
     def __user_cannot_vote(self, id):
         c = cherrypy.thread_data.sql.cursor()
-        c.execute('SELECT * FROM quotes WHERE id=?', id)
+        c.execute('SELECT * FROM quotes WHERE id=?', [id])
         res = c.fetchone()
         if res is None:
             c.close()
