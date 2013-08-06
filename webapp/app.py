@@ -91,7 +91,7 @@ class Quote(object):
             return can
 
         c = cherrypy.thread_data.sql.cursor()
-        c.execute('UPDATE quotes SET rate=rate+1 WHERE id=?', id)
+        c.execute('UPDATE quotes SET rate=rate+1 WHERE id=?', [id])
         cherrypy.thread_data.sql.commit()
         c.close()
         self.__add_user_to_voters(id)
@@ -105,7 +105,7 @@ class Quote(object):
             return can
 
         c = cherrypy.thread_data.sql.cursor()
-        c.execute('UPDATE quotes SET rate=rate-1 WHERE id=?', id)
+        c.execute('UPDATE quotes SET rate=rate-1 WHERE id=?', [id])
         cherrypy.thread_data.sql.commit()
         c.close()
         self.__add_user_to_voters(id)
